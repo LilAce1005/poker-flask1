@@ -13,9 +13,15 @@ SUIT_SYMBOLS = {
     'd': '♦',
     'c': '♣'
 }
+SUIT_MAP = {v: k for k, v in SUIT_SYMBOLS.items()}
 
 def convert_to_treys(cards):
-    return [Card.new(card.replace("10", "T")) for card in cards]
+    converted = []
+    for card in cards:
+        rank = card[:-1].replace("10", "T")
+        suit = SUIT_MAP[card[-1]]
+        converted.append(Card.new(rank + suit))
+    return converted
 
 def convert_to_symbol(card_str):
     rank = card_str[0] if card_str[1] != '0' else '10'
@@ -38,7 +44,8 @@ def simulate_best_combo(all_players_hands):
                 deck = Deck()
                 for h in opponents:
                     for c in h:
-                        deck.cards.remove(c)
+                        if c in deck.cards:
+                            deck.cards.remove(c)
                 board = deck.draw(5)
                 scores = [evaluator.evaluate(b, board) for b in opponents]
                 best = min(scores)
