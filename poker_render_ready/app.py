@@ -7,8 +7,20 @@ app = Flask(__name__)
 evaluator = Evaluator()
 SIMULATIONS = 1000
 
+SUIT_SYMBOLS = {
+    's': '♠',
+    'h': '♥',
+    'd': '♦',
+    'c': '♣'
+}
+
 def convert_to_treys(cards):
     return [Card.new(card.replace("10", "T")) for card in cards]
+
+def convert_to_symbol(card_str):
+    rank = card_str[0] if card_str[1] != '0' else '10'
+    suit_letter = card_str[-1].lower()
+    return rank + SUIT_SYMBOLS.get(suit_letter, '?')
 
 def simulate_best_combo(all_players_hands):
     best_combos = []
@@ -36,7 +48,7 @@ def simulate_best_combo(all_players_hands):
             if win_rate > best_score:
                 best_score = win_rate
                 best_combo = list(combo)
-        readable = [Card.int_to_str(c).replace("T", "10") for c in best_combo]
+        readable = [convert_to_symbol(Card.int_to_str(c).replace("T", "10")) for c in best_combo]
         best_combos.append({'best_cards': readable, 'win_rate': round(best_score * 100, 2)})
     return best_combos
 
